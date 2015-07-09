@@ -12,6 +12,11 @@ $playerData = array();
 $id = $_GET['id'];
 
 $req = file_get_contents('http://www.ourlads.com/nfldepthcharts/player/' . $id);
+$imgStr = 'src="../../images/players/';
+$req = substr($req, strpos($req, $imgStr) + strlen($imgStr));
+$imgURL = substr($req, 0, strpos($req, '"'));
+$playerData['Img URL'] = 'http://www.ourlads.com/images/players/'.$imgURL;
+
 $req = substr($req, strpos($req, '<span id="lNumber" class="pt_') + 29);
 
 $team = substr($req, 0, strpos($req, '"'));
@@ -216,7 +221,7 @@ if(strpos($req, $franchiseStr) == FALSE) {
     $currentSalary = str_replace(',', '', $currentSalary);
     $playerData['Current Salary'] = $currentSalary;
 
-    if(strpos($req, '<td class="salaryAmt dead current-year "><span class=" info" title=">-</span></td>') == FALSE) {
+    if(strpos($req, '<td class="salaryAmt dead current-year "><span class=" info" title="">-</span></td>') == FALSE) {
         $deadMoneyStr = 'Post June 1: $';
         $req = substr($req, strpos($req, $deadMoneyStr) + strlen($deadMoneyStr));
         $deadMoneyJ = substr($req, 0, strpos($req, '"'));
