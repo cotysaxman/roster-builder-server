@@ -10,6 +10,7 @@ header('Access-Control-Allow-Origin: *');
 $playerData = array();
 
 $id = $_GET['id'];
+$playerData['key'] = $id;
 
 $req = file_get_contents('http://www.ourlads.com/nfldepthcharts/player/' . $id);
 $imgStr = 'src="../../images/players/';
@@ -138,6 +139,9 @@ switch($nameSpotrac) {
     case "K'Waun Williams":
         $nameSpotrac = "kwuan-williams";
         break;
+    case "Ronald Leary":
+        $nameSpotrac = "ron-leary";
+        break;
     default:
         $firstName = substr($nameSpotrac, 0, strpos($nameSpotrac, ' '));
         if ($firstName == strtoupper($firstName)) { //all caps
@@ -223,15 +227,19 @@ if(strpos($req, $franchiseStr) == FALSE) {
 
     if(strpos($req, '<td class="salaryAmt dead current-year "><span class=" info" title="">-</span></td>') == FALSE) {
         $deadMoneyStr = 'Post June 1: $';
-        $req = substr($req, strpos($req, $deadMoneyStr) + strlen($deadMoneyStr));
-        $deadMoneyJ = substr($req, 0, strpos($req, '"'));
-        $deadMoneyJ = str_replace(',', '', $deadMoneyJ);
-        $playerData['June 1st Dead Money'] = $deadMoneyJ;
-
+        if(strpos($req, $deadMoneyStr)) {
+            $req = substr($req, strpos($req, $deadMoneyStr) + strlen($deadMoneyStr));
+            $deadMoneyJ = substr($req, 0, strpos($req, '"'));
+            $deadMoneyJ = str_replace(',', '', $deadMoneyJ);
+            $playerData['June 1st Dead Money'] = $deadMoneyJ;
+        } else {
+            $deadMoneyJ = "TBD";
+        }
         $req = substr($req, strpos($req, '$') + 1);
         $deadMoneyT = substr($req, 0, strpos($req, '<'));
         $deadMoneyT = str_replace(',', '', $deadMoneyT);
         $playerData['Total Dead Money'] = $deadMoneyT;
+        if($deadMoneyJ == "TBD") $deadMoneyJ = $deadMoneyT / 2;
         $playerData['Future Dead Money'] = $deadMoneyT - $deadMoneyJ;
     } else {
         $playerData['June 1st Dead Money'] = 0;
