@@ -219,13 +219,19 @@ if(strpos($req, $franchiseStr) == FALSE) {
     $suspendedString = ' option-reserve-suspended"><span class=" info" title="Reserve Suspended"';
     $suspendedNewStr = '"><span class=" info" ';
     $req = str_replace($suspendedString, $suspendedNewStr, $req);
+    $retStr = '<td class="salaryAmt result current-year  option-dead"><span class=" info" title="Dead">$';
     $curSalStr = '<td class="salaryAmt result current-year "><span class=" info" >$';
+    $req = str_replace($retStr, $curSalStr, $req);
     $req = substr($req, strpos($req, $curSalStr) + strlen($curSalStr));
     $currentSalary = substr($req, 0, strpos($req, '<'));
     $currentSalary = str_replace(',', '', $currentSalary);
     $playerData['Current Salary'] = $currentSalary;
 
-    if(strpos($req, '<td class="salaryAmt dead current-year "><span class=" info" title="">-</span></td>') == FALSE) {
+    $retDeadStr = '<td class="salaryAmt dead current-year  option-dead"><span class=" info" title="">-</span></td>';
+    $noDeadStr = '<td class="salaryAmt dead current-year "><span class=" info" title="">-</span></td>';
+    $req = str_replace($retDeadStr, $noDeadStr, $req);
+
+    if(strpos($req, $noDeadStr) == FALSE) {
         $deadMoneyStr = 'Post June 1: $';
         if(strpos($req, $deadMoneyStr)) {
             $req = substr($req, strpos($req, $deadMoneyStr) + strlen($deadMoneyStr));
