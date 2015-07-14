@@ -142,6 +142,9 @@ switch($nameSpotrac) {
     case "Ronald Leary":
         $nameSpotrac = "ron-leary";
         break;
+    case "Mike Person":
+        $nameSpotrac = "michael-person";
+        break;
     default:
         $firstName = substr($nameSpotrac, 0, strpos($nameSpotrac, ' '));
         if ($firstName == strtoupper($firstName)) { //all caps

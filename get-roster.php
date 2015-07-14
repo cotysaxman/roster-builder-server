@@ -123,20 +123,40 @@ switch($teamName) {
         $teamSpotrac = "washington-redskins";
         break;
 }
-$teamSpotracURL = 'http://www.spotrac.com/nfl/'.$teamSpotrac.'/';
+$teamSpotracURL = 'http://www.spotrac.com/nfl/'.$teamSpotrac.'/cap/';
 
 $st = file_get_contents($teamSpotracURL);
+$totalSalStr = '<td class="player">All Active Contracts';
+$st = substr($st, strpos($st, $totalSalStr));
+$start = strpos($st, '$') + 1;
+$st = substr($st, $start);
+$end = strpos($st, '<');
+$totalSalaryStr = substr($st, 0, $end);
+$totalSalaryStr = str_replace(',', '', $totalSalaryStr);
 $deadCapStr = 'Dead Cap:</span></span>';
 $st = substr($st, strpos($st, $deadCapStr) + strlen($deadCapStr));
 $start = strpos($st, '$') + 1;
 $end = strpos($st, '</a>');
-$st = substr($st, $start, $end - $start);
-$st = str_replace(',', '', $st);
+$deadMoneyStr = substr($st, $start, $end - $start);
+$deadMoneyStr = str_replace(',', '', $deadMoneyStr);
 
+$urlDM = 'https://boiling-fire-929.firebaseio.com/roster-builder/teams/'.$teamName.'/salary-cap/.json?x-http-method-override=PATCH';
+
+$deadMoney = json_encode(array("Dead Money" => $deadMoneyStr, "Total Salary" => $totalSalaryStr));
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $urlDM);
+curl_setopt($ch, CURLOPT_POST, TRUE);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $deadMoney);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'Content-Type: application/json',
+        'Content-Length: ' . strlen($deadMoney))
+);
+$api_response = curl_exec($ch);
+echo $api_response;
 
 $FINALOUTPUT = array("roster" => $roster);
-$FINALOUTPUT['Dead Money'] = $st;
-
 
 //Get the whole page
 $req = file_get_contents('http://www.ourlads.com/nfldepthcharts/depthchart/'.$teamName);
