@@ -161,6 +161,7 @@ $playerData['Spotrac URL'] = $playerSpotrac;
 
 $req = substr($req, strpos($req, '<span id="lPos">') + 16);
 $pos = substr($req, 0, strpos($req, ' '));
+if($pos == 'OB') $pos = 'OLB'; //fix typo for outside linebackers...
 $playerData['Position'] = $pos;
 
 $req = substr($req, strpos($req, 'id="lCollege"'));
